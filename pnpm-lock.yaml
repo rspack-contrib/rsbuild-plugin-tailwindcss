@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      postcss:
-        specifier: ^8.4.47
-        version: 8.4.47
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.4
@@ -30,6 +26,9 @@ importers:
       playwright:
         specifier: ^1.48.2
         version: 1.48.2
+      postcss:
+        specifier: ^8.4.47
+        version: 8.4.47
       simple-git-hooks:
         specifier: ^2.11.1
         version: 2.11.1
