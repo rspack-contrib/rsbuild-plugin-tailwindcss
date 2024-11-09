@@ -192,7 +192,7 @@ class TailwindRspackPluginImpl {
           '.rsbuild',
           entryName,
         )
-      : await mkdtemp(tmpdir());
+      : await mkdtemp(path.join(tmpdir(), entryName));
 
     const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
 
