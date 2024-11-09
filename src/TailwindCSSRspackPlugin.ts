@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import type { Rspack } from '@rsbuild/core';
 
@@ -196,7 +197,7 @@ class TailwindRspackPluginImpl {
     await writeFile(
       configPath,
       `\
-import config from '${userConfig}'
+import config from '${pathToFileURL(userConfig)}'
 export default {
   ...config,
   content: ${JSON.stringify(Array.from(entryModules))}
