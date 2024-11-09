@@ -1,7 +1,7 @@
 import 'tailwindcss/utilities.css';
 
 function className() {
-  return 'flex';
+  return 'justify-end';
 }
 
 const root = document.getElementById('root');
