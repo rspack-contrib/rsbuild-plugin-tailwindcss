@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -196,13 +197,20 @@ class TailwindRspackPluginImpl {
 
     const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
 
+    const content = JSON.stringify(Array.from(entryModules));
+
     await writeFile(
       configPath,
-      `\
+      existsSync(userConfig)
+        ? `\
 import config from '${pathToFileURL(userConfig)}'
 export default {
   ...config,
-  content: ${JSON.stringify(Array.from(entryModules))}
+  content: ${content}
+}`
+        : `\
+export default {
+  content: ${content}
 }`,
     );
 

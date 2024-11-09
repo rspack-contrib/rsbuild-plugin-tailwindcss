@@ -69,3 +69,31 @@ test('should build with absolute config', async ({ page }) => {
 
   await server.close();
 });
+
+test('should build without tailwind.config.js', async ({ page }) => {
+  const rsbuild = await createRsbuild({
+    cwd: __dirname,
+    rsbuildConfig: {
+      plugins: [pluginTailwindCSS()],
+    },
+  });
+
+  await rsbuild.build();
+  const { server, urls } = await rsbuild.preview();
+
+  await page.goto(urls[0]);
+
+  const display = await page.evaluate(() => {
+    const el = document.getElementById('test');
+
+    if (!el) {
+      throw new Error('#test not found');
+    }
+
+    return window.getComputedStyle(el).getPropertyValue('display');
+  });
+
+  expect(display).toBe('flex');
+
+  await server.close();
+});
