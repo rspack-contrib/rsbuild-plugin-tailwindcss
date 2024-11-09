@@ -1,7 +1,7 @@
 import 'tailwindcss/utilities.css';
 
 function className() {
-  return 'flex';
+  return 'w-8';
 }
 
 const root = document.getElementById('root');

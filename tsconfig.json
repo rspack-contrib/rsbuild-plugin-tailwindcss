@@ -12,6 +12,7 @@
     "isolatedDeclarations": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "exactOptionalPropertyTypes": true,
     "resolveJsonModule": true
   },
   "include": ["src"]

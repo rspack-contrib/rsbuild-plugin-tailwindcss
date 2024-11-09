@@ -2,16 +2,16 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 import { createRsbuild } from '@rsbuild/core';
-import { pluginExample } from '../../src';
+import { pluginTailwindCSS } from '../../src';
 import { getRandomPort } from '../helper';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('should render page as expected', async ({ page }) => {
+test('should dev with tailwind utilities', async ({ page }) => {
   const rsbuild = await createRsbuild({
     cwd: __dirname,
     rsbuildConfig: {
-      plugins: [pluginExample()],
+      plugins: [pluginTailwindCSS()],
       server: {
         port: getRandomPort(),
       },
@@ -21,16 +21,27 @@ test('should render page as expected', async ({ page }) => {
   const { server, urls } = await rsbuild.startDevServer();
 
   await page.goto(urls[0]);
-  expect(await page.evaluate('window.test')).toBe(1);
+
+  const display = await page.evaluate(() => {
+    const el = document.getElementById('test');
+
+    if (!el) {
+      throw new Error('#test not found');
+    }
+
+    return window.getComputedStyle(el).getPropertyValue('display');
+  });
+
+  expect(display).toBe('flex');
 
   await server.close();
 });
 
-test('should build succeed', async ({ page }) => {
+test('should build with tailwind utilities', async ({ page }) => {
   const rsbuild = await createRsbuild({
     cwd: __dirname,
     rsbuildConfig: {
-      plugins: [pluginExample()],
+      plugins: [pluginTailwindCSS()],
     },
   });
 
@@ -38,7 +49,18 @@ test('should build succeed', async ({ page }) => {
   const { server, urls } = await rsbuild.preview();
 
   await page.goto(urls[0]);
-  expect(await page.evaluate('window.test')).toBe(1);
+
+  const display = await page.evaluate(() => {
+    const el = document.getElementById('test');
+
+    if (!el) {
+      throw new Error('#test not found');
+    }
+
+    return window.getComputedStyle(el).getPropertyValue('display');
+  });
+
+  expect(display).toBe('flex');
 
   await server.close();
 });
