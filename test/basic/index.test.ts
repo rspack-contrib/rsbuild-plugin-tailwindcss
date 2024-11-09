@@ -1,4 +1,5 @@
-import { dirname } from 'node:path';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 import { createRsbuild } from '@rsbuild/core';
@@ -63,4 +64,17 @@ test('should build with tailwind utilities', async ({ page }) => {
   expect(display).toBe('flex');
 
   await server.close();
+});
+
+test('should not generate tailwind.config.js in dist/', async () => {
+  const rsbuild = await createRsbuild({
+    cwd: __dirname,
+    rsbuildConfig: {
+      plugins: [pluginTailwindCSS()],
+    },
+  });
+
+  await rsbuild.build();
+
+  expect(existsSync(resolve(__dirname, './dist/.rsbuild'))).toBeFalsy();
 });

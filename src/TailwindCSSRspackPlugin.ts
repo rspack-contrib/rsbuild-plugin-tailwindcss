@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -184,13 +185,14 @@ class TailwindRspackPluginImpl {
       : // biome-ignore lint/style/noNonNullAssertion: should have context
         path.resolve(this.compiler.options.context!, this.options.config);
 
-    const outputDir = path.resolve(
-      // biome-ignore lint/style/noNonNullAssertion: should have `output.path`
-      this.compiler.options.output.path!,
-      '.rsbuild',
-      entryName,
-    );
-    await mkdir(outputDir, { recursive: true });
+    const outputDir = DEBUG
+      ? path.resolve(
+          // biome-ignore lint/style/noNonNullAssertion: should have `output.path`
+          this.compiler.options.output.path!,
+          '.rsbuild',
+          entryName,
+        )
+      : await mkdtemp(tmpdir());
 
     const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
 
@@ -220,3 +222,14 @@ function collectModules(
     entryModules.add(module.resource);
   }
 }
+
+const DEBUG = (function isDebug() {
+  if (!process.env.DEBUG) {
+    return false;
+  }
+
+  const values = process.env.DEBUG.toLocaleLowerCase().split(',');
+  return ['rsbuild', 'rsbuild:tailwind', 'rsbuild:*', '*'].some((key) =>
+    values.includes(key),
+  );
+})();
