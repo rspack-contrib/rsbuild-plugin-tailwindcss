@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -212,6 +212,10 @@ class TailwindRspackPluginImpl {
           entryName,
         )
       : await mkdtemp(path.join(tmpdir(), entryName));
+
+    if (DEBUG) {
+      await mkdir(outputDir, { recursive: true });
+    }
 
     const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
 
