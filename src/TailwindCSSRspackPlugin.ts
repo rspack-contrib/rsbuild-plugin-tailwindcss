@@ -24,7 +24,7 @@ interface TailwindRspackPluginOptions {
    * import path from 'node:path'
    * import { fileURLToPath } from 'node:url'
    *
-   * import { TailwindRspackPlugin } from '@rsbuild/plugin-tailwindcss'
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
    *
    * const __dirname = path.dirname(fileURLToPath(import.meta.url))
    *
@@ -43,7 +43,7 @@ interface TailwindRspackPluginOptions {
    *
    * ```js
    * // rspack.config.js
-   * import { TailwindRspackPlugin } from '@rsbuild/plugin-tailwindcss'
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
    *
    * export default {
    *   plugins: [
@@ -65,7 +65,7 @@ interface TailwindRspackPluginOptions {
    *
    * ```js
    * // rspack.config.js
-   * import { TailwindRspackPlugin } from '@rsbuild/plugin-tailwindcss'
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
    *
    * export default {
    *   plugins: [
