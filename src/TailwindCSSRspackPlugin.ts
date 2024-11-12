@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import type { Rspack } from '@rsbuild/core';
+import type { PostCSSLoaderOptions, Rspack } from '@rsbuild/core';
 
 /**
  * The options for {@link TailwindRspackPlugin}.
@@ -14,10 +14,6 @@ import type { Rspack } from '@rsbuild/core';
 interface TailwindRspackPluginOptions {
   /**
    * The path to the configuration of Tailwind CSS.
-   *
-   * @remarks
-   *
-   * The default value is `tailwind.config.js`.
    *
    * @example
    *
@@ -58,7 +54,36 @@ interface TailwindRspackPluginOptions {
    * }
    * ```
    */
-  config?: string;
+  config: string;
+
+  /**
+   * The postcss options to be applied.
+   *
+   * @example
+   *
+   * Use `cssnano`:
+   *
+   * ```js
+   * // rspack.config.js
+   * import { TailwindRspackPlugin } from '@rsbuild/plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     new TailwindRspackPlugin({
+   *       postcssOptions: {
+   *         plugins: {
+   *           cssnano: process.env['NODE_ENV'] === 'production' ? {} : false,
+   *         },
+   *       },
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  postcssOptions: Exclude<
+    PostCSSLoaderOptions['postcssOptions'],
+    (loaderContext: Rspack.LoaderContext) => void
+  >;
 }
 
 /**
@@ -67,9 +92,7 @@ interface TailwindRspackPluginOptions {
  * @public
  */
 class TailwindRspackPlugin {
-  constructor(
-    private readonly options?: TailwindRspackPluginOptions | undefined,
-  ) {}
+  constructor(private readonly options: TailwindRspackPluginOptions) {}
 
   /**
    * `defaultOptions` is the default options that the {@link TailwindRspackPlugin} uses.
@@ -79,6 +102,7 @@ class TailwindRspackPlugin {
   static defaultOptions: Readonly<Required<TailwindRspackPluginOptions>> =
     Object.freeze<Required<TailwindRspackPluginOptions>>({
       config: 'tailwind.config.js',
+      postcssOptions: {},
     });
 
   /**
@@ -86,26 +110,19 @@ class TailwindRspackPlugin {
    * @param compiler - the Rspack compiler
    */
   apply(compiler: Rspack.Compiler): void {
-    new TailwindRspackPluginImpl(
-      compiler,
-      Object.assign({}, TailwindRspackPlugin.defaultOptions, this.options),
-    );
+    new TailwindRspackPluginImpl(compiler, this.options);
   }
 }
 
 export { TailwindRspackPlugin };
 export type { TailwindRspackPluginOptions };
 
-type NoUndefinedField<T> = {
-  [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>>;
-};
-
 class TailwindRspackPluginImpl {
   name = 'TailwindRspackPlugin';
 
   constructor(
     private compiler: Rspack.Compiler,
-    private options: NoUndefinedField<TailwindRspackPluginOptions>,
+    private options: TailwindRspackPluginOptions,
   ) {
     const { RawSource } = compiler.webpack.sources;
     compiler.hooks.thisCompilation.tap(this.name, (compilation) => {
@@ -146,6 +163,7 @@ class TailwindRspackPluginImpl {
               ]);
 
               const postcssTransform = postcss([
+                ...(options.postcssOptions?.plugins ?? []),
                 // We use a config path to avoid performance issue of TailwindCSS
                 // See: https://github.com/tailwindlabs/tailwindcss/issues/14229
                 tailwindcss({
@@ -161,7 +179,7 @@ class TailwindRspackPluginImpl {
                   // FIXME: add custom postcss config
                   const transformResult = await postcssTransform.process(
                     content,
-                    { from: asset.name },
+                    { from: asset.name, ...options.postcssOptions },
                   );
                   // FIXME: add sourcemap support
                   compilation.updateAsset(
