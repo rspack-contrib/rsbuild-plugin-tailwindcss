@@ -40,7 +40,7 @@ export type PluginTailwindCSSOptions = {
    * import path from 'node:path'
    * import { fileURLToPath } from 'node:url'
    *
-   * import { pluginTailwindCSS } from '@rsbuild/plugin-tailwindcss'
+   * import { pluginTailwindCSS } from 'rsbuild-plugin-tailwindcss'
    *
    * const __dirname = path.dirname(fileURLToPath(import.meta.url))
    *
