@@ -1,6 +1,6 @@
 {
   "name": "rsbuild-plugin-tailwindcss",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "repository": "https://github.com/rspack-contrib/rsbuild-plugin-tailwindcss",
   "license": "MIT",
   "type": "module",
