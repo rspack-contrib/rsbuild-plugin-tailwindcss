@@ -195,6 +195,12 @@ class TailwindRspackPluginImpl {
     });
   }
 
+  async ensureTempDir(entryName: string): Promise<string> {
+    const prefix = path.join(tmpdir(), entryName);
+    await mkdir(path.dirname(prefix), { recursive: true });
+    return await mkdtemp(prefix);
+  }
+
   async #prepareTailwindConfig(
     entryName: string,
     entryModules: Set<string>,
@@ -211,7 +217,7 @@ class TailwindRspackPluginImpl {
           '.rsbuild',
           entryName,
         )
-      : await mkdtemp(path.join(tmpdir(), entryName));
+      : await this.ensureTempDir(entryName);
 
     if (DEBUG) {
       await mkdir(outputDir, { recursive: true });
