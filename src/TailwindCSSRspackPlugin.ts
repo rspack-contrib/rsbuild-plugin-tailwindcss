@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -288,11 +289,45 @@ class TailwindRspackPluginImpl {
 
     const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
 
-    const content = JSON.stringify(entryModules);
-
     await writeFile(
       configPath,
-      existsSync(userConfig)
+      await this.#generateTailwindConfig(userConfig, entryModules),
+    );
+
+    return configPath;
+  }
+
+  async #resolveTailwindCSSVersion(): Promise<string> {
+    const require = createRequire(import.meta.url);
+    const pkgPath = require.resolve('tailwindcss/package.json');
+
+    const content = await readFile(pkgPath, 'utf-8');
+
+    const { version } = JSON.parse(content) as { version: string };
+
+    return version;
+  }
+
+  async #generateTailwindConfig(
+    userConfig: string,
+    entryModules: string[],
+  ): Promise<string> {
+    const version = await this.#resolveTailwindCSSVersion();
+
+    const { default: satisfies } = await import(
+      'semver/functions/satisfies.js'
+    );
+
+    const content = JSON.stringify(entryModules);
+    if (satisfies(version, '^3.3.0')) {
+      // Tailwind CSS support using ESM configuration in v3.3.0
+      // See:
+      //   - https://github.com/tailwindlabs/tailwindcss/releases/tag/v3.3.0
+      //   - https://github.com/tailwindlabs/tailwindcss/pull/10785
+      //   - https://github.com/rspack-contrib/rsbuild-plugin-tailwindcss/issues/18
+      //
+      // In this case, we provide an ESM configuration to support both ESM and CJS.
+      return existsSync(userConfig)
         ? `\
 import config from '${pathToFileURL(userConfig)}'
 export default {
@@ -302,10 +337,21 @@ export default {
         : `\
 export default {
   content: ${content}
-}`,
-    );
+}`;
+    }
 
-    return configPath;
+    // Otherwise, we provide an CJS configuration since TailwindCSS would always use `require`.
+    return existsSync(userConfig)
+      ? `\
+const config = require('${userConfig}')
+module.exports = {
+  ...config,
+  content: ${content}
+}`
+      : `\
+module.exports = {
+  content: ${content}
+}`;
   }
 }
 
