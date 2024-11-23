@@ -109,12 +109,43 @@ export default {
 };
 ```
 
+### `exclude` / `include`
+
+- Type: `ReadonlyArray<string | RegExp> | string | RegExp | null | undefined`
+- Default: `undefined`
+
+These two options are used to filter which module to be processed by Tailwind CSS using [`picomatch`](https://github.com/micromatch/picomatch#globbing-features) pattern.
+
+If `include` is omitted or empty, all modules that do not match any of the `exclude` patterns will be included.
+Otherwise, only modules that match one or more of the `include` patterns and do not match any of the `exclude` patterns will be included.
+
+- Example:
+
+Include all `.js`, `.jsx`, `.ts`, `.tsx` files but exclude files in `./src/store` and `node_modules`:
+
+```js
+// rsbuild.config.ts
+import { pluginTailwindCSS } from "@byted-lynx/plugin-tailwindcss";
+
+export default {
+  plugins: [
+    pluginTailwindCSS({
+      include: /\.[jt]sx?/,
+      exclude: ["./src/store/**", /[\\/]node_modules[\\/]/],
+    }),
+  ],
+};
+```
+
+Note that `picomatch` patterns are very similar to [`minimatch`](https://github.com/isaacs/minimatch#readme) patterns, and in most use cases, they are interchangeable. If you have more specific pattern matching needs, you can view [this comparison table](https://github.com/micromatch/picomatch#library-comparisons) to learn more about where the libraries differ.
+
 ## Credits
 
 Thanks to:
 
 - [Tailwind CSS V4](https://tailwindcss.com/blog/tailwindcss-v4-alpha) for the idea of purge CSS by module graph.
 - The [purge-tailwind-plugin](https://github.com/hardfist/purge-tailwind-plugin) created by [@hardfist](https://github.com/hardfist) for the implementation of the Rspack plugin.
+- The [Rollup](https://github.com/rollup/) project created by [Rich Harris](https://github.com/Rich-Harris) and maintained by [Lukas Taegert-Atkinson](https://github.com/lukastaegert) for the implementaion of `exclude` and `include`.
 
 ## License
 
