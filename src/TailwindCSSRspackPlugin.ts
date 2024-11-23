@@ -349,7 +349,7 @@ export default {
       'tailwind.config.cjs',
       existsSync(userConfig)
         ? `\
-const config = require('${process.platform === 'win32' ? pathToFileURL(userConfig) : userConfig}')
+const config = require(${JSON.stringify(userConfig)})
 module.exports = {
   ...config,
   content: ${content}
