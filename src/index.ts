@@ -5,8 +5,11 @@ import type {
 } from '@rsbuild/core';
 
 import { TailwindRspackPlugin } from './TailwindCSSRspackPlugin.js';
+import type { FilterPattern } from './TailwindCSSRspackPlugin.js';
 
-export type PluginTailwindCSSOptions = {
+export type { FilterPattern };
+
+export interface PluginTailwindCSSOptions {
   /**
    * The path to the configuration of Tailwind CSS.
    *
@@ -54,7 +57,62 @@ export type PluginTailwindCSSOptions = {
    * ```
    */
   config?: string;
-};
+
+  /**
+   * The modules to be excluded using `picomatch` patterns.
+   *
+   * If {@link include} is omitted or empty,
+   * all modules that do not match any of the {@link exclude} patterns will be included.
+   * Otherwise, only modules that match one or more of the {@link include} patterns
+   * and do not match any of the {@link exclude} patterns will be included.
+   *
+   * @example
+   *
+   * ```js
+   * // rsbuild.config.ts
+   * import { pluginTailwindCSS } from '@byted-lynx/plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     pluginTailwindCSS({
+   *       exclude: [
+   *         './src/store/**',
+   *         /[\\/]node_modules[\\/]/,
+   *       ],
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  exclude?: FilterPattern | undefined;
+
+  /**
+   * The modules to be included using `picomatch` patterns.
+   *
+   * If {@link include} is omitted or empty,
+   * all modules that do not match any of the {@link exclude} patterns will be included.
+   * Otherwise, only modules that match one or more of the {@link include} patterns
+   * and do not match any of the {@link exclude} patterns will be included.
+   *
+   * @example
+   *
+   * ```js
+   * // rsbuild.config.ts
+   * import { pluginTailwindCSS } from '@byted-lynx/plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     pluginTailwindCSS({
+   *       include: [
+   *         /\.[jt]sx?/,
+   *       ],
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  include?: FilterPattern | undefined;
+}
 
 export const pluginTailwindCSS = (
   options: PluginTailwindCSSOptions = {},
@@ -97,11 +155,14 @@ export const pluginTailwindCSS = (
     api.modifyBundlerChain({
       order: 'post',
       handler(chain) {
-        chain
-          .plugin('tailwindcss')
-          .use(TailwindRspackPlugin, [
-            { config: options.config ?? 'tailwind.config.js', postcssOptions },
-          ]);
+        chain.plugin('tailwindcss').use(TailwindRspackPlugin, [
+          {
+            config: options.config ?? 'tailwind.config.js',
+            include: options.include,
+            exclude: options.exclude,
+            postcssOptions,
+          },
+        ]);
       },
     });
   },

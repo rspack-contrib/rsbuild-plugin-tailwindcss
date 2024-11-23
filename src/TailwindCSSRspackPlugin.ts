@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { createFilter } from '@rollup/pluginutils';
 import type { PostCSSLoaderOptions, Rspack } from '@rsbuild/core';
 
 /**
@@ -57,6 +58,61 @@ interface TailwindRspackPluginOptions {
   config: string;
 
   /**
+   * The modules to be excluded.
+   *
+   * If {@link include} is omitted or empty,
+   * all modules that do not match any of the {@link exclude} patterns will be included.
+   * Otherwise, only modules that match one or more of the {@link include} patterns
+   * and do not match any of the {@link exclude} patterns will be included.
+   *
+   * @example
+   *
+   * ```js
+   * // rspack.config.js
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     new TailwindRspackPlugin({
+   *       exclude: [
+   *         './src/store/**',
+   *         /[\\/]node_modules[\\/]/,
+   *       ],
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  exclude?: FilterPattern | undefined;
+
+  /**
+   * The modules to be included using `picomatch` patterns.
+   *
+   * If {@link include} is omitted or empty,
+   * all modules that do not match any of the {@link exclude} patterns will be included.
+   * Otherwise, only modules that match one or more of the {@link include} patterns
+   * and do not match any of the {@link exclude} patterns will be included.
+   *
+   * @example
+   *
+   * ```js
+   * // rspack.config.js
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     new TailwindRspackPlugin({
+   *       include: [
+   *         /\.[jt]sx?/,
+   *       ],
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  include?: FilterPattern | undefined;
+
+  /**
    * The postcss options to be applied.
    *
    * @example
@@ -86,6 +142,16 @@ interface TailwindRspackPluginOptions {
   >;
 }
 
+// From `@rollup/pluginutils`
+/**
+ * A valid `picomatch` glob pattern, or array of patterns.
+ */
+export type FilterPattern =
+  | ReadonlyArray<string | RegExp>
+  | string
+  | RegExp
+  | null;
+
 /**
  * The Rspack plugin for Tailwind integration.
  *
@@ -93,17 +159,6 @@ interface TailwindRspackPluginOptions {
  */
 class TailwindRspackPlugin {
   constructor(private readonly options: TailwindRspackPluginOptions) {}
-
-  /**
-   * `defaultOptions` is the default options that the {@link TailwindRspackPlugin} uses.
-   *
-   * @public
-   */
-  static defaultOptions: Readonly<Required<TailwindRspackPluginOptions>> =
-    Object.freeze<Required<TailwindRspackPluginOptions>>({
-      config: 'tailwind.config.js',
-      postcssOptions: {},
-    });
 
   /**
    * The entry point of a Rspack plugin.
@@ -124,6 +179,11 @@ class TailwindRspackPluginImpl {
     private compiler: Rspack.Compiler,
     private options: TailwindRspackPluginOptions,
   ) {
+    const filter = createFilter(options.include, options.exclude, {
+      // biome-ignore lint/style/noNonNullAssertion: context should exist
+      resolve: compiler.options.context!,
+    });
+
     const { RawSource } = compiler.webpack.sources;
     compiler.hooks.thisCompilation.tap(this.name, (compilation) => {
       compilation.hooks.processAssets.tapPromise(this.name, async () => {
@@ -159,7 +219,10 @@ class TailwindRspackPluginImpl {
               ] = await Promise.all([
                 import('postcss'),
                 import('tailwindcss'),
-                this.#prepareTailwindConfig(entryName, entryModules),
+                this.#prepareTailwindConfig(
+                  entryName,
+                  Array.from(entryModules).filter(filter),
+                ),
               ]);
 
               const postcssTransform = postcss([
@@ -203,7 +266,7 @@ class TailwindRspackPluginImpl {
 
   async #prepareTailwindConfig(
     entryName: string,
-    entryModules: Set<string>,
+    entryModules: Array<string>,
   ): Promise<string> {
     const userConfig = path.isAbsolute(this.options.config)
       ? this.options.config
@@ -225,7 +288,7 @@ class TailwindRspackPluginImpl {
 
     const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
 
-    const content = JSON.stringify(Array.from(entryModules));
+    const content = JSON.stringify(entryModules);
 
     await writeFile(
       configPath,

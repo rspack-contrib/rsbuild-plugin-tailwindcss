@@ -14,6 +14,9 @@ importers:
       '@playwright/test':
         specifier: ^1.48.2
         version: 1.48.2
+      '@rollup/pluginutils':
+        specifier: ^5.1.3
+        version: 5.1.3
       '@rsbuild/core':
         specifier: ^1.1.0
         version: 1.1.0
@@ -154,6 +157,15 @@ packages:
     resolution: {integrity: sha512-54w1xCWfXuax7dz4W2M9uw0gDyh+ti/0K/MxcCUxChFh37kkdxPdfZDw5QBbuPUJHr1CiHJ1hXgSs+GgeQc5Zw==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@rollup/pluginutils@5.1.3':
+    resolution: {integrity: sha512-Pnsb6f32CD2W3uCaLZIzDmeFyQ2b8UWMFI7xtwUezpcGBDVDW6y9XgAWIlARiGAo6eNF5FK5aQTr0LFyNyqq5A==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
 
   '@rsbuild/core@1.0.19':
     resolution: {integrity: sha512-63DAPvYfRBoUrb51BUPb4Xoqx48MHQ0yLcmnCiqZGpMeKYtTWzD+lyx5va4cr9qvdnIFTAX2BMuYC/j5iSrtTA==}
@@ -299,6 +311,9 @@ packages:
   '@swc/helpers@0.5.13':
     resolution: {integrity: sha512-UoKGxQ3r5kYI9dALKJapMmuK+1zWM/H17Z1+iwnNmzcJRnfFuevZs375TA5rW31pu4BS4NoSy1fRsexDXfWn5w==}
 
+  '@types/estree@1.0.6':
+    resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
+
   '@types/node@22.9.0':
     resolution: {integrity: sha512-vuyHg81vvWA1Z1ELfvLko2c8f34gyA0zaic0+Rllc5lbCnbSyuvb2Oxpm6TAUAC/2xZN3QGqxBNggD1nNR2AfQ==}
 
@@ -393,6 +408,9 @@ packages:
 
   emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
+
+  estree-walker@2.0.2:
+    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
 
   fast-glob@3.3.2:
     resolution: {integrity: sha512-oX2ruAFQwf/Orj8m737Y5adxDQO0LAB7/S5MnxCdTNDd4p6BsyIVsv9JQsATbTSq8KHRpLwIHbVlUNatxd+1Ow==}
@@ -851,6 +869,12 @@ snapshots:
     dependencies:
       playwright: 1.48.2
 
+  '@rollup/pluginutils@5.1.3':
+    dependencies:
+      '@types/estree': 1.0.6
+      estree-walker: 2.0.2
+      picomatch: 4.0.2
+
   '@rsbuild/core@1.0.19':
     dependencies:
       '@rspack/core': 1.0.14(@swc/helpers@0.5.13)
@@ -979,6 +1003,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@types/estree@1.0.6': {}
+
   '@types/node@22.9.0':
     dependencies:
       undici-types: 6.19.8
@@ -1059,6 +1085,8 @@ snapshots:
   emoji-regex@8.0.0: {}
 
   emoji-regex@9.2.2: {}
+
+  estree-walker@2.0.2: {}
 
   fast-glob@3.3.2:
     dependencies:
