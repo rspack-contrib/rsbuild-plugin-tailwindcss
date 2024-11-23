@@ -41,9 +41,9 @@ jobs:
 
       - name: Install tailwindcss@${{ matrix.tailwindcss }}
         if: ${{ matrix.tailwindcss }} != "latest"
-        # Tailwind CSS <= v3.4.0 does not have correct TypeScript definition.
-        # So we add a `|| echo 'Success'` to avoid `rslib build` failed.
-        run: pnpm add -D -w tailwindcss@${{ matrix.tailwindcss }} || echo 'Success'
+        # Tailwind CSS <= v3.4.0 does not have correct TypeScript definition, which will make `rslib build` fail.
+        continue-on-error: true 
+        run: pnpm add -D -w tailwindcss@${{ matrix.tailwindcss }}
 
       - name: Run Test
         run: pnpm run test
