@@ -343,7 +343,7 @@ export default {
     // Otherwise, we provide an CJS configuration since TailwindCSS would always use `require`.
     return existsSync(userConfig)
       ? `\
-const config = require('${userConfig}')
+const config = require('${pathToFileURL(userConfig)}')
 module.exports = {
   ...config,
   content: ${content}
