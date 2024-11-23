@@ -14,9 +14,13 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    name: Test tailwindcss@${{ matrix.tailwindcss }} on ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        tailwindcss:
+          - latest
+          - "3.2.7" # The lastest version that does not support ESM.
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,6 +38,10 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install && npx playwright install
+
+      - name: Install tailwindcss@${{ matrix.tailwindcss }}
+        if: ${{ matrix.tailwindcss }} != "latest"
+        run: pnpm add -D -w tailwindcss@${{ matrix.tailwindcss }}
 
       - name: Run Test
         run: pnpm run test
