@@ -287,12 +287,13 @@ class TailwindRspackPluginImpl {
       await mkdir(outputDir, { recursive: true });
     }
 
-    const configPath = path.resolve(outputDir, 'tailwind.config.mjs');
-
-    await writeFile(
-      configPath,
-      await this.#generateTailwindConfig(userConfig, entryModules),
+    const [configName, configContent] = await this.#generateTailwindConfig(
+      userConfig,
+      entryModules,
     );
+    const configPath = path.resolve(outputDir, configName);
+
+    await writeFile(configPath, configContent);
 
     return configPath;
   }
@@ -311,7 +312,7 @@ class TailwindRspackPluginImpl {
   async #generateTailwindConfig(
     userConfig: string,
     entryModules: string[],
-  ): Promise<string> {
+  ): Promise<['tailwind.config.mjs' | 'tailwind.config.cjs', string]> {
     const version = await this.#resolveTailwindCSSVersion();
 
     const { default: satisfies } = await import(
@@ -327,31 +328,37 @@ class TailwindRspackPluginImpl {
       //   - https://github.com/rspack-contrib/rsbuild-plugin-tailwindcss/issues/18
       //
       // In this case, we provide an ESM configuration to support both ESM and CJS.
-      return existsSync(userConfig)
-        ? `\
+      return [
+        'tailwind.config.mjs',
+        existsSync(userConfig)
+          ? `\
 import config from '${pathToFileURL(userConfig)}'
 export default {
   ...config,
   content: ${content}
 }`
-        : `\
+          : `\
 export default {
   content: ${content}
-}`;
+}`,
+      ];
     }
 
     // Otherwise, we provide an CJS configuration since TailwindCSS would always use `require`.
-    return existsSync(userConfig)
-      ? `\
-const config = require('${pathToFileURL(userConfig)}')
+    return [
+      'tailwind.config.cjs',
+      existsSync(userConfig)
+        ? `\
+const config = require('${process.platform === 'win32' ? pathToFileURL(userConfig) : userConfig}')
 module.exports = {
   ...config,
   content: ${content}
 }`
-      : `\
+        : `\
 module.exports = {
   content: ${content}
-}`;
+}`,
+    ];
   }
 }
 
