@@ -42,7 +42,11 @@ importers:
         specifier: ^5.6.3
         version: 5.6.3
 
-  playground: {}
+  playground:
+    devDependencies:
+      rsbuild-plugin-tailwindcss:
+        specifier: workspace:*
+        version: link:..
 
 packages:
 
