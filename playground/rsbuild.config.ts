@@ -1,5 +1,5 @@
 import { defineConfig } from '@rsbuild/core';
-import { pluginTailwindCSS } from '../src';
+import { pluginTailwindCSS } from 'rsbuild-plugin-tailwindcss';
 
 export default defineConfig({
   plugins: [pluginTailwindCSS()],
