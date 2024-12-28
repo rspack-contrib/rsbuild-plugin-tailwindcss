@@ -14,9 +14,13 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    name: Test tailwindcss@${{ matrix.tailwindcss }} on ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        tailwindcss:
+          - latest
+          - "3.1.0" # The fist version that support `options.config`.
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,6 +38,12 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install && npx playwright install chromium
+
+      - name: Install tailwindcss@${{ matrix.tailwindcss }}
+        if: ${{ matrix.tailwindcss }} != "latest"
+        # Tailwind CSS <= v3.4.0 does not have correct TypeScript definition, which will make `rslib build` fail.
+        continue-on-error: true 
+        run: pnpm add -D -w tailwindcss@${{ matrix.tailwindcss }}
 
       - name: Run Test
         run: pnpm run test

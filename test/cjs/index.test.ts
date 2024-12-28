@@ -3,16 +3,10 @@ import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 import { createRsbuild } from '@rsbuild/core';
 import { pluginTailwindCSS } from '../../src';
-import { supportESM } from '../helper';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('should build with relative config', async ({ page }) => {
-  test.skip(
-    !supportESM(),
-    'Skip since the tailwindcss version does not support ESM configuration',
-  );
-
   const rsbuild = await createRsbuild({
     cwd: __dirname,
     rsbuildConfig: {
@@ -45,11 +39,6 @@ test('should build with relative config', async ({ page }) => {
 });
 
 test('should build with absolute config', async ({ page }) => {
-  test.skip(
-    !supportESM(),
-    'Skip since the tailwindcss version does not support ESM configuration',
-  );
-
   const rsbuild = await createRsbuild({
     cwd: __dirname,
     rsbuildConfig: {
