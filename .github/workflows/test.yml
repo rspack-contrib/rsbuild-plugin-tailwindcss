@@ -37,7 +37,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install Dependencies
-        run: pnpm install && npx playwright install
+        run: pnpm install && npx playwright install chromium
 
       - name: Install tailwindcss@${{ matrix.tailwindcss }}
         if: ${{ matrix.tailwindcss }} != "latest"

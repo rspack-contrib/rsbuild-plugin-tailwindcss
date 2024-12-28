@@ -371,7 +371,14 @@ function collectModules(
       collectModules(innerModule, entryModules);
     }
   } else if (module.resource) {
-    entryModules.add(module.resource);
+    // The value of `module.resource` maybe one of them:
+    // 1. /w/a.js
+    // 2. /w/a.js?component
+
+    const resource: string =
+      // rspack doesn't have the property `module.resourceResolveData.path` now.
+      module.resource.split('?')[0];
+    entryModules.add(resource);
   }
 }
 
