@@ -1,6 +1,6 @@
 {
   "name": "rsbuild-plugin-tailwindcss",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "repository": "https://github.com/rspack-contrib/rsbuild-plugin-tailwindcss",
   "license": "MIT",
   "type": "module",
@@ -55,6 +55,7 @@
   "packageManager": "pnpm@9.14.4",
   "publishConfig": {
     "access": "public",
+    "provenance": true,
     "registry": "https://registry.npmjs.org/"
   }
 }
