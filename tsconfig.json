@@ -3,7 +3,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "target": "ES2021",
-    "lib": ["DOM", "ES2021"],
+    "lib": ["DOM", "ES2021", "ESNext.Collection"],
     "module": "Node16",
     "moduleResolution": "Node16",
     "strict": true,
