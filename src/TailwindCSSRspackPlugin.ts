@@ -209,21 +209,17 @@ class TailwindRspackPluginImpl {
                 return;
               }
 
-              if (compiler.modifiedFiles) {
-                const cache =
-                  TailwindRspackPluginImpl.#postcssProcessorCache.get(
-                    entryName,
+              const cache =
+                TailwindRspackPluginImpl.#postcssProcessorCache.get(entryName);
+              if (compiler.modifiedFiles && cache) {
+                const [cachedEntryModules, cachedPostcssProcessor] = cache;
+                if (isSubsetOf(compiler.modifiedFiles, cachedEntryModules)) {
+                  await this.#transformCSSAssets(
+                    compilation,
+                    cachedPostcssProcessor,
+                    cssFiles,
                   );
-                if (cache) {
-                  const [cachedEntryModules, cachedPostcssProcessor] = cache;
-                  if (isSubsetOf(compiler.modifiedFiles, cachedEntryModules)) {
-                    await this.#transformCSSAssets(
-                      compilation,
-                      cachedPostcssProcessor,
-                      cssFiles,
-                    );
-                    return;
-                  }
+                  return;
                 }
               }
 
@@ -235,6 +231,18 @@ class TailwindRspackPluginImpl {
                   compilation.chunkGraph.getChunkModulesIterable(chunk);
                 for (const module of modules) {
                   collectModules(module, entryModules);
+                }
+              }
+
+              if (compiler.modifiedFiles && cache) {
+                const [cachedEntryModules, cachedPostcssProcessor] = cache;
+                if (isSubsetOf(entryModules, cachedEntryModules)) {
+                  await this.#transformCSSAssets(
+                    compilation,
+                    cachedPostcssProcessor,
+                    cssFiles,
+                  );
+                  return;
                 }
               }
 
