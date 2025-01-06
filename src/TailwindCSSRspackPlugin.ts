@@ -7,6 +7,9 @@ import { pathToFileURL } from 'node:url';
 
 import { createFilter } from '@rollup/pluginutils';
 import type { PostCSSLoaderOptions, Rspack } from '@rsbuild/core';
+import type { Processor } from 'postcss';
+
+import { isSubsetOf } from './Set.prototype.isSubsetOf.js';
 
 /**
  * The options for {@link TailwindRspackPlugin}.
@@ -176,6 +179,11 @@ export type { TailwindRspackPluginOptions };
 class TailwindRspackPluginImpl {
   name = 'TailwindRspackPlugin';
 
+  static #postcssProcessorCache = new Map<
+    /** entryName */ string,
+    [entryModules: ReadonlySet<string>, Processor]
+  >();
+
   constructor(
     private compiler: Rspack.Compiler,
     private options: TailwindRspackPluginOptions,
@@ -185,7 +193,6 @@ class TailwindRspackPluginImpl {
       resolve: compiler.options.context!,
     });
 
-    const { RawSource } = compiler.webpack.sources;
     compiler.hooks.thisCompilation.tap(this.name, (compilation) => {
       compilation.hooks.processAssets.tapPromise(this.name, async () => {
         await Promise.all(
@@ -202,6 +209,20 @@ class TailwindRspackPluginImpl {
                 return;
               }
 
+              const cache =
+                TailwindRspackPluginImpl.#postcssProcessorCache.get(entryName);
+              if (compiler.modifiedFiles && cache) {
+                const [cachedEntryModules, cachedPostcssProcessor] = cache;
+                if (isSubsetOf(compiler.modifiedFiles, cachedEntryModules)) {
+                  await this.#transformCSSAssets(
+                    compilation,
+                    cachedPostcssProcessor,
+                    cssFiles,
+                  );
+                  return;
+                }
+              }
+
               // collect all the modules corresponding to specific entry
               const entryModules = new Set<string>();
 
@@ -210,6 +231,18 @@ class TailwindRspackPluginImpl {
                   compilation.chunkGraph.getChunkModulesIterable(chunk);
                 for (const module of modules) {
                   collectModules(module, entryModules);
+                }
+              }
+
+              if (compiler.modifiedFiles && cache) {
+                const [cachedEntryModules, cachedPostcssProcessor] = cache;
+                if (isSubsetOf(entryModules, cachedEntryModules)) {
+                  await this.#transformCSSAssets(
+                    compilation,
+                    cachedPostcssProcessor,
+                    cssFiles,
+                  );
+                  return;
                 }
               }
 
@@ -226,7 +259,7 @@ class TailwindRspackPluginImpl {
                 ),
               ]);
 
-              const postcssTransform = postcss([
+              const processor = postcss([
                 ...(options.postcssOptions?.plugins ?? []),
                 // We use a config path to avoid performance issue of TailwindCSS
                 // See: https://github.com/tailwindlabs/tailwindcss/issues/14229
@@ -235,28 +268,41 @@ class TailwindRspackPluginImpl {
                 }),
               ]);
 
-              // iterate all css asset in entry and inject entry modules into tailwind content
-              await Promise.all(
-                cssFiles.map(async (asset) => {
-                  const content = asset.source.source();
-                  // transform .css which contains tailwind mixin
-                  // FIXME: add custom postcss config
-                  const transformResult = await postcssTransform.process(
-                    content,
-                    { from: asset.name, ...options.postcssOptions },
-                  );
-                  // FIXME: add sourcemap support
-                  compilation.updateAsset(
-                    asset.name,
-                    new RawSource(transformResult.css),
-                  );
-                }),
-              );
+              TailwindRspackPluginImpl.#postcssProcessorCache.set(entryName, [
+                entryModules,
+                processor,
+              ]);
+
+              await this.#transformCSSAssets(compilation, processor, cssFiles);
             },
           ),
         );
       });
     });
+  }
+
+  async #transformCSSAssets(
+    compilation: Rspack.Compilation,
+    postcssProcessor: Processor,
+    cssFiles: Array<Rspack.Asset>,
+  ) {
+    const { RawSource } = this.compiler.webpack.sources;
+
+    // iterate all css asset in entry and inject entry modules into tailwind content
+    await Promise.all(
+      cssFiles.map(async (asset) => {
+        const content = asset.source.source();
+        // transform .css which contains tailwind mixin
+        // FIXME: add custom postcss config
+        const transformResult = await postcssProcessor.process(content, {
+          from: asset.name,
+          ...this.options.postcssOptions,
+        });
+        // FIXME: avoid `updateAsset` when no change is found.
+        // FIXME: add sourcemap support
+        compilation.updateAsset(asset.name, new RawSource(transformResult.css));
+      }),
+    );
   }
 
   async ensureTempDir(entryName: string): Promise<string> {
