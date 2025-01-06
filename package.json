@@ -32,9 +32,9 @@
     "@playwright/test": "^1.49.1",
     "@rollup/pluginutils": "^5.1.4",
     "@rsbuild/core": "^1.1.13",
-    "@rslib/core": "^0.2.2",
+    "@rslib/core": "^0.3.0",
     "@rsbuild/webpack": "^1.1.6",
-    "@types/node": "^22.10.4",
+    "@types/node": "^22.10.5",
     "@types/semver": "^7.5.8",
     "playwright": "^1.49.1",
     "postcss": "^8.4.49",
@@ -52,7 +52,7 @@
       "optional": true
     }
   },
-  "packageManager": "pnpm@9.15.2",
+  "packageManager": "pnpm@9.15.3",
   "publishConfig": {
     "access": "public",
     "provenance": true,
