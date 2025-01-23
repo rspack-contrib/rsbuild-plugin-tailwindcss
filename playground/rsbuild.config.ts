@@ -1,6 +1,22 @@
 import { defineConfig } from '@rsbuild/core';
-import { pluginTailwindCSS } from 'rsbuild-plugin-tailwindcss';
+import { webpackProvider } from '@rsbuild/webpack';
+import { TailwindRspackPlugin } from 'rspack-plugin-tailwindcss';
 
 export default defineConfig({
-  plugins: [pluginTailwindCSS()],
+  provider: webpackProvider,
+  plugins: [],
+  tools: {
+    bundlerChain(chain, { CHAIN_ID }) {
+      chain.module
+        .rule(CHAIN_ID.RULE.CSS)
+        .use('tailwindcss')
+        .after(CHAIN_ID.USE.CSS)
+        .loader(TailwindRspackPlugin.loader)
+        .end();
+
+      chain.plugin('tailwindcss').use(TailwindRspackPlugin);
+
+      chain.cache(false);
+    },
+  },
 });

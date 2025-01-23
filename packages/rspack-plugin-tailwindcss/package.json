@@ -1,0 +1,40 @@
+{
+  "name": "rspack-plugin-tailwindcss",
+  "version": "1.0.0-alpha.0",
+  "repository": {
+    "url": "https://github.com/rspack-contrib/rsbuild-plugin-tailwindcss",
+    "directory": "packages/rspack-plugin-tailwindcss"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/oxide": "4.0.2",
+    "enhanced-resolve": "5.18.0"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.1.13",
+    "@rslib/core": "^0.4.0",
+    "@types/node": "^22.13.0",
+    "@tailwindcss/node": "4.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  }
+}
