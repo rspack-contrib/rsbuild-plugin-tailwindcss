@@ -6,16 +6,16 @@ import { Scanner } from '@tailwindcss/oxide';
 
 import { S_PLUGIN_TAILWINDCSS } from './symbol.js';
 
-export type LoaderOptions = {};
+export type LoaderContext = Rspack.LoaderContext & {
+  [S_PLUGIN_TAILWINDCSS]: {
+    moduleGraphCandidates: Map<string, Set<string>>;
+  };
+};
 
 export default async function loader(
-  this: Rspack.LoaderContext<LoaderOptions> & {
-    [S_PLUGIN_TAILWINDCSS]: {
-      moduleGraphCandidates: Map<string, Set<string>>;
-    };
-  },
+  this: LoaderContext,
   source: string,
-) {
+): Promise<string> {
   const { moduleGraphCandidates } = this[S_PLUGIN_TAILWINDCSS];
 
   const set = moduleGraphCandidates.get(this.resourcePath);

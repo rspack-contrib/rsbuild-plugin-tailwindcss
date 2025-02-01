@@ -1,1 +1,3 @@
-export const S_PLUGIN_TAILWINDCSS = Symbol.for('rspack-plugin-tailwindcss');
+export const S_PLUGIN_TAILWINDCSS: unique symbol = Symbol.for(
+  'rspack-plugin-tailwindcss',
+);

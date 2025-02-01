@@ -1,10 +1,9 @@
-import path from 'node:path';
 import type { Rspack } from '@rsbuild/core';
 
 import { S_PLUGIN_TAILWINDCSS } from './symbol.js';
 
 export class TailwindRspackPlugin {
-  static loader = require.resolve('./loader.js');
+  static loader: string = require.resolve('./loader.js');
 
   apply(compiler: Rspack.Compiler): void {
     new TailwindRspackPluginImpl(compiler);
@@ -22,7 +21,10 @@ class TailwindRspackPluginImpl {
       NormalModule.getCompilationHooks(compilation).loader.tap(
         this.name,
         (loaderContext) => {
-          loaderContext[S_PLUGIN_TAILWINDCSS] = { moduleGraphCandidates };
+          Object.defineProperty(loaderContext, S_PLUGIN_TAILWINDCSS, {
+            enumerable: true,
+            value: { moduleGraphCandidates },
+          });
         },
       );
 
@@ -30,6 +32,7 @@ class TailwindRspackPluginImpl {
         const ids = new Map<string, Rspack.Module>(
           Array.from(modules)
             .filter((module) => module.resource !== undefined)
+            // biome-ignore lint/style/noNonNullAssertion: context should exist
             .map((module) => [module.resource!, module]),
         );
 
@@ -40,6 +43,7 @@ class TailwindRspackPluginImpl {
               const entryModules = new Set<string>();
               collectModules(compilation, module, entryModules);
 
+              // biome-ignore lint/style/noNonNullAssertion: context should exist
               moduleGraphCandidates.set(module.resource!, entryModules);
 
               return new Promise<void>((resolve, reject) => {
