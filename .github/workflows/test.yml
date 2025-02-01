@@ -19,7 +19,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         tailwindcss:
-          - latest
+          - "^3"
           - "3.1.0" # The fist version that support `options.config`.
 
     # Steps represent a sequence of tasks that will be executed as part of the job
