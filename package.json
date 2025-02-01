@@ -29,19 +29,19 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.50.1",
     "@rollup/pluginutils": "^5.1.4",
-    "@rsbuild/core": "^1.1.13",
-    "@rslib/core": "^0.3.0",
-    "@rsbuild/webpack": "^1.1.6",
-    "@types/node": "^22.10.5",
+    "@rsbuild/core": "^1.2.3",
+    "@rslib/core": "^0.4.0",
+    "@rsbuild/webpack": "^1.2.0",
+    "@types/node": "^22.13.0",
     "@types/semver": "^7.5.8",
-    "playwright": "^1.49.1",
-    "postcss": "^8.4.49",
-    "semver": "^7.6.3",
+    "playwright": "^1.50.1",
+    "postcss": "^8.5.1",
+    "semver": "^7.7.0",
     "simple-git-hooks": "^2.11.1",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@rsbuild/core": "^1.1.0",
@@ -52,7 +52,7 @@
       "optional": true
     }
   },
-  "packageManager": "pnpm@9.15.3",
+  "packageManager": "pnpm@9.15.4",
   "publishConfig": {
     "access": "public",
     "provenance": true,
