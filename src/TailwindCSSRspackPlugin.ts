@@ -260,12 +260,12 @@ class TailwindRspackPluginImpl {
               ]);
 
               const processor = postcss([
-                ...(options.postcssOptions?.plugins ?? []),
                 // We use a config path to avoid performance issue of TailwindCSS
                 // See: https://github.com/tailwindlabs/tailwindcss/issues/14229
                 tailwindcss({
                   config: configPath,
                 }),
+                ...(options.postcssOptions?.plugins ?? []),
               ]);
 
               TailwindRspackPluginImpl.#postcssProcessorCache.set(entryName, [
