@@ -31,17 +31,17 @@
     "@biomejs/biome": "^1.9.4",
     "@playwright/test": "^1.50.1",
     "@rollup/pluginutils": "^5.1.4",
-    "@rsbuild/core": "^1.2.3",
-    "@rslib/core": "^0.4.0",
-    "@rsbuild/webpack": "^1.2.0",
-    "@types/node": "^22.13.0",
+    "@rsbuild/core": "^1.2.13",
+    "@rslib/core": "^0.5.2",
+    "@rsbuild/webpack": "^1.2.3",
+    "@types/node": "^22.13.7",
     "@types/semver": "^7.5.8",
     "playwright": "^1.50.1",
-    "postcss": "^8.5.1",
-    "semver": "^7.7.0",
+    "postcss": "^8.5.3",
+    "semver": "^7.7.1",
     "simple-git-hooks": "^2.11.1",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "peerDependencies": {
     "@rsbuild/core": "^1.1.0",
@@ -52,7 +52,7 @@
       "optional": true
     }
   },
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@9.15.6",
   "publishConfig": {
     "access": "public",
     "provenance": true,
