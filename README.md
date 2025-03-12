@@ -139,6 +139,38 @@ export default {
 
 Note that `picomatch` patterns are very similar to [`minimatch`](https://github.com/isaacs/minimatch#readme) patterns, and in most use cases, they are interchangeable. If you have more specific pattern matching needs, you can view [this comparison table](https://github.com/micromatch/picomatch#library-comparisons) to learn more about where the libraries differ.
 
+## Debugging
+
+Use `DEBUG='rsbuild'` to enable debugging mode for the plugin. When debugging is enabled, the plugin will:
+
+1. Save the generated Tailwind CSS configuration files in the `.rsbuild/<entry-name>` directory inside your project's output path.
+2. Generate readable configuration files that include all modules being processed by Tailwind CSS.
+
+This is helpful for:
+
+- Inspecting which modules are included in the Tailwind CSS content scanning
+- Troubleshooting issues with CSS purging
+- Understanding how the plugin is generating configurations for each entry point
+
+Example:
+
+```bash
+# For macOS/Linux
+DEBUG=rsbuild npm run build
+
+# For Windows (cmd)
+set DEBUG=rsbuild && npm run build
+
+# For Windows (PowerShell)
+$env:DEBUG="rsbuild"; npm run build
+```
+
+You can also use more specific debug patterns:
+
+- `DEBUG=rsbuild:tailwind` - Debug only the Tailwind CSS plugin
+- `DEBUG=rsbuild:*` - Debug all Rsbuild plugins
+- `DEBUG=*` - Debug everything
+
 ## Credits
 
 Thanks to:
