@@ -411,14 +411,14 @@ module.exports = {
 }
 
 function collectModules(
-  module: Rspack.Module,
+  module: Rspack.Module | Rspack.ConcatenatedModule | Rspack.NormalModule,
   entryModules: Set<string>,
 ): void {
-  if (module.modules) {
+  if ('modules' in module && module.modules) {
     for (const innerModule of module.modules) {
       collectModules(innerModule, entryModules);
     }
-  } else if (module.resource) {
+  } else if ('resource' in module && module.resource) {
     // The value of `module.resource` maybe one of them:
     // 1. /w/a.js
     // 2. /w/a.js?component
