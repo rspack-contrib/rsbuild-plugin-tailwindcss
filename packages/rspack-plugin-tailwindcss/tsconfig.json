@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     // @tailwindcss/node is using `const enum`
-    "isolatedModules": false
+    "isolatedModules": false,
+    "outDir": "./dist"
   },
   "include": ["src"]
 }

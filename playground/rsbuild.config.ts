@@ -5,7 +5,11 @@ import { TailwindRspackPlugin } from 'rspack-plugin-tailwindcss';
 export default defineConfig({
   provider: webpackProvider,
   plugins: [],
+  output: {
+    injectStyles: true,
+  },
   tools: {
+    lightningcssLoader: false,
     bundlerChain(chain, { CHAIN_ID }) {
       chain.module
         .rule(CHAIN_ID.RULE.CSS)

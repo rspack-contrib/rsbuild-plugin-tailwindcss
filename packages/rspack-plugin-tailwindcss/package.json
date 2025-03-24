@@ -23,14 +23,14 @@
     "dev": "rslib build --watch"
   },
   "dependencies": {
-    "@tailwindcss/oxide": "4.0.2",
+    "@tailwindcss/oxide": "4.0.15",
     "enhanced-resolve": "5.18.0"
   },
   "devDependencies": {
-    "@rsbuild/core": "^1.1.13",
-    "@rslib/core": "^0.4.0",
+    "@rsbuild/core": "^1.3.0-beat.1",
+    "@rslib/core": "^0.5.3",
     "@types/node": "^22.13.0",
-    "@tailwindcss/node": "4.0.2"
+    "@tailwindcss/node": "4.0.15"
   },
   "publishConfig": {
     "access": "public",

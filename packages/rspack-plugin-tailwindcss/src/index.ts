@@ -17,7 +17,10 @@ class TailwindRspackPluginImpl {
     const moduleGraphCandidates = new Map<string, Set<string>>();
 
     const { NormalModule } = compiler.webpack;
+
     compiler.hooks.thisCompilation.tap(this.name, (compilation) => {
+      let initial = true;
+
       NormalModule.getCompilationHooks(compilation).loader.tap(
         this.name,
         (loaderContext) => {
@@ -29,16 +32,27 @@ class TailwindRspackPluginImpl {
       );
 
       compilation.hooks.finishModules.tapPromise(this.name, async (modules) => {
-        const ids = new Map<string, Rspack.Module>(
+        if (!initial) {
+          return;
+        }
+        initial = false;
+
+        const ids = new Map<string, Rspack.NormalModule>(
           Array.from(modules)
-            .filter((module) => module.resource !== undefined)
+            .filter(
+              (module): module is Rspack.NormalModule =>
+                'resource' in module && module.resource !== undefined,
+            )
             // biome-ignore lint/style/noNonNullAssertion: context should exist
             .map((module) => [module.resource!, module]),
         );
 
         await Promise.all(
           Array.from(ids.values())
-            .filter((module) => module.resource?.endsWith('.css'))
+            .filter(
+              (module): module is Rspack.NormalModule =>
+                'resource' in module && !!module.resource?.endsWith('.css'),
+            )
             .map((module) => {
               const entryModules = new Set<string>();
               collectModules(compilation, module, entryModules);
@@ -64,7 +78,7 @@ class TailwindRspackPluginImpl {
 
 function collectModules(
   compilation: Rspack.Compilation,
-  module: Rspack.Module,
+  module: Rspack.Module | Rspack.ConcatenatedModule | Rspack.NormalModule,
   entryModules: Set<string>,
 ): void {
   const issuer = compilation.moduleGraph.getIssuer(module);
@@ -73,11 +87,11 @@ function collectModules(
     collectModules(compilation, issuer, entryModules);
   }
 
-  if (module.modules) {
+  if ('modules' in module && module.modules) {
     for (const innerModule of module.modules) {
       collectModules(compilation, innerModule, entryModules);
     }
-  } else if (module.resource) {
+  } else if ('resource' in module && module.resource) {
     // The value of `module.resource` maybe one of them:
     // 1. /w/a.js
     // 2. /w/a.js?component
