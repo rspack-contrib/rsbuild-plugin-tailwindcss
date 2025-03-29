@@ -1,6 +1,6 @@
 {
   "name": "rsbuild-plugin-tailwindcss",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": "https://github.com/rspack-contrib/rsbuild-plugin-tailwindcss",
   "license": "MIT",
   "type": "module",
@@ -9,15 +9,19 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./tailwindcss": {
+      "default": "./src/index.css"
     }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "src/index.css"],
   "scripts": {
     "build": "rslib build",
     "bump": "npx bumpp",
+    "clean": "rm -rf ./dist ./node_modules ./playground/node_modules ./playground/dist",
     "dev": "rslib build --watch",
     "lint": "biome check .",
     "lint:write": "biome check . --write",
@@ -30,27 +34,15 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@playwright/test": "^1.50.1",
-    "@rollup/pluginutils": "^5.1.4",
-    "@rsbuild/core": "^1.3.0-beta.0",
-    "@rslib/core": "^0.5.2",
-    "@rsbuild/webpack": "^1.2.3",
-    "@types/node": "^22.13.7",
-    "@types/semver": "^7.5.8",
+    "@rsbuild/core": "^1.3.0",
+    "@rslib/core": "^0.6.0",
+    "@types/node": "^22.13.14",
+    "picocolors": "^1.1.1",
     "playwright": "^1.50.1",
-    "postcss": "^8.5.3",
-    "semver": "^7.7.1",
     "simple-git-hooks": "^2.11.1",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.0.17",
+    "@tailwindcss/postcss": "^4.0.17",
     "typescript": "^5.8.2"
-  },
-  "peerDependencies": {
-    "@rsbuild/core": "^1.1.0",
-    "tailwindcss": "^3.1.0"
-  },
-  "peerDependenciesMeta": {
-    "@rsbuild/core": {
-      "optional": true
-    }
   },
   "packageManager": "pnpm@10.5.2",
   "publishConfig": {
