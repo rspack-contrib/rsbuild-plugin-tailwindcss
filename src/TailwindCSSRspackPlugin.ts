@@ -179,7 +179,7 @@ export type { TailwindRspackPluginOptions };
 class TailwindRspackPluginImpl {
   name = 'TailwindRspackPlugin';
 
-  static #postcssProcessorCache = new Map<
+  postcssProcessorCache = new Map<
     /** entryName */ string,
     [entryModules: ReadonlySet<string>, Processor]
   >();
@@ -209,8 +209,7 @@ class TailwindRspackPluginImpl {
                 return;
               }
 
-              const cache =
-                TailwindRspackPluginImpl.#postcssProcessorCache.get(entryName);
+              const cache = this.postcssProcessorCache.get(entryName);
               if (compiler.modifiedFiles?.size && cache) {
                 const [cachedEntryModules, cachedPostcssProcessor] = cache;
                 if (isSubsetOf(compiler.modifiedFiles, cachedEntryModules)) {
@@ -268,7 +267,7 @@ class TailwindRspackPluginImpl {
                 ...(options.postcssOptions?.plugins ?? []),
               ]);
 
-              TailwindRspackPluginImpl.#postcssProcessorCache.set(entryName, [
+              this.postcssProcessorCache.set(entryName, [
                 entryModules,
                 processor,
               ]);
