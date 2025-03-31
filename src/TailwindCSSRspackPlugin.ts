@@ -211,7 +211,7 @@ class TailwindRspackPluginImpl {
 
               const cache =
                 TailwindRspackPluginImpl.#postcssProcessorCache.get(entryName);
-              if (compiler.modifiedFiles && cache) {
+              if (compiler.modifiedFiles?.size && cache) {
                 const [cachedEntryModules, cachedPostcssProcessor] = cache;
                 if (isSubsetOf(compiler.modifiedFiles, cachedEntryModules)) {
                   await this.#transformCSSAssets(
