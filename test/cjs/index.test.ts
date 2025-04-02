@@ -16,6 +16,9 @@ test('should build with relative config', async ({ page }) => {
           config: './config/tailwind.config.js',
         }),
       ],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 
@@ -48,6 +51,9 @@ test('should build with absolute config', async ({ page }) => {
           config: resolve(__dirname, './config/tailwind.config.js'),
         }),
       ],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 

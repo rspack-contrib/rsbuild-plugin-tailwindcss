@@ -53,6 +53,9 @@ test('should build with resource query on rspack', async ({ page }) => {
           index: resolve(__dirname, './src/index.js?entry'),
         },
       },
+      server: {
+        port: getRandomPort(),
+      },
       plugins: [pluginTailwindCSS()],
     },
   });
@@ -121,6 +124,9 @@ test('should build with resource query on webpack', async ({ page }) => {
         entry: {
           index: resolve(__dirname, './src/index.js?entry'),
         },
+      },
+      server: {
+        port: getRandomPort(),
       },
       provider: webpackProvider,
       plugins: [pluginTailwindCSS()],

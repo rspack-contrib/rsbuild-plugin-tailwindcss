@@ -112,6 +112,9 @@ test('should build with tailwind utilities in multiple entries', async ({
         },
       },
       plugins: [pluginTailwindCSS()],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 

@@ -43,6 +43,9 @@ test('should build with tailwind utilities', async ({ page }) => {
     cwd: __dirname,
     rsbuildConfig: {
       plugins: [pluginTailwindCSS()],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 
