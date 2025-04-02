@@ -74,6 +74,9 @@ test('should build without tailwind.config.js', async ({ page }) => {
   const rsbuild = await createRsbuild({
     cwd: __dirname,
     rsbuildConfig: {
+      server: {
+        port: Math.ceil(Math.random() * 30000) + 15000,
+      },
       plugins: [pluginTailwindCSS()],
     },
   });
