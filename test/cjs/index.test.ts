@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 import { createRsbuild } from '@rsbuild/core';
 import { pluginTailwindCSS } from '../../src';
+import { getRandomPort } from '../helper';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -74,6 +75,9 @@ test('should build without tailwind.config.js', async ({ page }) => {
   const rsbuild = await createRsbuild({
     cwd: __dirname,
     rsbuildConfig: {
+      server: {
+        port: getRandomPort(),
+      },
       plugins: [pluginTailwindCSS()],
     },
   });
