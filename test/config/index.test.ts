@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 import { createRsbuild } from '@rsbuild/core';
 import { pluginTailwindCSS } from '../../src';
-import { supportESM } from '../helper';
+import { supportESM, getRandomPort } from '../helper';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,6 +21,9 @@ test('should build with relative config', async ({ page }) => {
           config: './config/tailwind.config.js',
         }),
       ],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 
@@ -58,6 +61,9 @@ test('should build with absolute config', async ({ page }) => {
           config: resolve(__dirname, './config/tailwind.config.js'),
         }),
       ],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 
@@ -86,6 +92,9 @@ test('should build without tailwind.config.js', async ({ page }) => {
     cwd: __dirname,
     rsbuildConfig: {
       plugins: [pluginTailwindCSS()],
+      server: {
+        port: getRandomPort(),
+      },
     },
   });
 
