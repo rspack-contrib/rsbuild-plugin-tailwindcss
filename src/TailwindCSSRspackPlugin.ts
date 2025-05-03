@@ -117,6 +117,32 @@ interface TailwindRspackPluginOptions {
   include?: FilterPattern | undefined;
 
   /**
+   * Setting Tailwind config path for different entries
+   *
+   * {@link multipleConfig} can be configured as an object where the key is the entryName and the value is the config path.
+   * If the key cannot be found, it will fallback to {@link config} , which is the default config path.
+   *
+   * @example
+   *
+   * ```js
+   * // rspack.config.js
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     new TailwindRspackPlugin({
+   *        multipleConfig: {
+   *          index: './config/tailwind.index.config.js',
+   *          main: './config/tailwind.main.config.js'
+   *        },
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  multipleConfig?: Record<string, string> | undefined;
+
+  /**
    * The postcss options to be applied.
    *
    * @example
@@ -314,10 +340,14 @@ class TailwindRspackPluginImpl {
     entryName: string,
     entryModules: Array<string>,
   ): Promise<string> {
-    const userConfig = path.isAbsolute(this.options.config)
-      ? this.options.config
+    const multipleConfig = this.options.multipleConfig || {};
+
+    const userConfig = multipleConfig[entryName] || this.options.config;
+
+    const resolvedConfig = path.isAbsolute(userConfig)
+      ? userConfig
       : // biome-ignore lint/style/noNonNullAssertion: should have context
-        path.resolve(this.compiler.options.context!, this.options.config);
+        path.resolve(this.compiler.options.context!, userConfig);
 
     const outputDir = DEBUG
       ? path.resolve(
@@ -333,7 +363,7 @@ class TailwindRspackPluginImpl {
     }
 
     const [configName, configContent] = await this.#generateTailwindConfig(
-      userConfig,
+      resolvedConfig,
       entryModules,
     );
     const configPath = path.resolve(outputDir, configName);
