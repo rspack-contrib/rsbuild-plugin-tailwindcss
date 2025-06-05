@@ -112,6 +112,32 @@ export interface PluginTailwindCSSOptions {
    * ```
    */
   include?: FilterPattern | undefined;
+
+  /**
+   * Setting Tailwind config path for different entries
+   *
+   * {@link multipleConfig} can be configured as an object where the key is the entryName and the value is the config path.
+   * If the key cannot be found, it will fallback to {@link config} , which is the default config path.
+   *
+   * @example
+   *
+   * ```js
+   * // rspack.config.js
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     new TailwindRspackPlugin({
+   *        multipleConfig: {
+   *          index: './config/tailwind.index.config.js',
+   *          main: './config/tailwind.main.config.js'
+   *        },
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  multipleConfig?: Record<string, string> | undefined;
 }
 
 export const pluginTailwindCSS = (
@@ -160,6 +186,7 @@ export const pluginTailwindCSS = (
             config: options.config ?? 'tailwind.config.js',
             include: options.include,
             exclude: options.exclude,
+            multipleConfig: options.multipleConfig,
             postcssOptions,
           },
         ]);
