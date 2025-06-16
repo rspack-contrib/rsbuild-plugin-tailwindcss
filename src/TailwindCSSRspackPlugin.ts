@@ -379,7 +379,9 @@ class TailwindRspackPluginImpl {
   ): Promise<string> {
     const require = createRequire(import.meta.url);
     const pkgPath = require.resolve('tailwindcss/package.json', {
-      paths: [tailwindcssPath ? path.dirname(tailwindcssPath) : this.compiler.context],
+      paths: [
+        tailwindcssPath ? path.dirname(tailwindcssPath) : this.compiler.context,
+      ],
     });
 
     const content = await readFile(pkgPath, 'utf-8');
