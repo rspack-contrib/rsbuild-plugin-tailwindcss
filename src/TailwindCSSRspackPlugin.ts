@@ -144,6 +144,33 @@ interface TailwindRspackPluginOptions {
     PostCSSLoaderOptions['postcssOptions'],
     (loaderContext: Rspack.LoaderContext) => void
   >;
+
+  /**
+   * Specifies the absolute path to the tailwindcss package.
+   *
+   * By default, tailwindcss is resolved using Node.js module resolution algorithm
+   * starting from the project's root directory. This option allows explicit
+   * specification of the tailwindcss location for scenarios where automatic
+   * resolution fails or the resolved path is not correct, such as in monorepo.
+   *
+   * ```js
+   * // rspack.config.js
+   * import { TailwindRspackPlugin } from 'rsbuild-plugin-tailwindcss'
+   *
+   * export default {
+   *   plugins: [
+   *     new TailwindRspackPlugin({
+   *       postcssOptions: {
+   *         plugins: {
+   *           tailwindcssPath: require.resolve('tailwindcss'),
+   *         },
+   *       },
+   *     }),
+   *   ],
+   * }
+   * ```
+   */
+  tailwindcssPath?: string | undefined;
 }
 
 // From `@rollup/pluginutils`
@@ -244,14 +271,17 @@ class TailwindRspackPluginImpl {
                   return;
                 }
               }
-
               const [
                 { default: postcss },
                 { default: tailwindcss },
                 configPath,
               ] = await Promise.all([
                 import('postcss'),
-                import('tailwindcss'),
+                import(
+                  typeof this.options.tailwindcssPath === 'string'
+                    ? `${pathToFileURL(this.options.tailwindcssPath)}`
+                    : 'tailwindcss'
+                ),
                 this.#prepareTailwindConfig(
                   entryName,
                   Array.from(entryModules).filter(filter),
@@ -335,6 +365,7 @@ class TailwindRspackPluginImpl {
     const [configName, configContent] = await this.#generateTailwindConfig(
       userConfig,
       entryModules,
+      this.options.tailwindcssPath,
     );
     const configPath = path.resolve(outputDir, configName);
 
@@ -343,10 +374,12 @@ class TailwindRspackPluginImpl {
     return configPath;
   }
 
-  async #resolveTailwindCSSVersion(): Promise<string> {
+  async #resolveTailwindCSSVersion(
+    tailwindcssPath: string | undefined,
+  ): Promise<string> {
     const require = createRequire(import.meta.url);
     const pkgPath = require.resolve('tailwindcss/package.json', {
-      paths: [this.compiler.context],
+      paths: [tailwindcssPath ? path.dirname(tailwindcssPath) : this.compiler.context],
     });
 
     const content = await readFile(pkgPath, 'utf-8');
@@ -359,8 +392,9 @@ class TailwindRspackPluginImpl {
   async #generateTailwindConfig(
     userConfig: string,
     entryModules: string[],
+    tailwindcssPath: string | undefined,
   ): Promise<['tailwind.config.mjs' | 'tailwind.config.cjs', string]> {
-    const version = await this.#resolveTailwindCSSVersion();
+    const version = await this.#resolveTailwindCSSVersion(tailwindcssPath);
 
     const { default: satisfies } = await import(
       'semver/functions/satisfies.js'
