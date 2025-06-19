@@ -139,6 +139,30 @@ export default {
 
 Note that `picomatch` patterns are very similar to [`minimatch`](https://github.com/isaacs/minimatch#readme) patterns, and in most use cases, they are interchangeable. If you have more specific pattern matching needs, you can view [this comparison table](https://github.com/micromatch/picomatch#library-comparisons) to learn more about where the libraries differ.
 
+### `tailwindcssPath`
+
+Specifies the absolute path to the tailwindcss package.
+
+By default, tailwindcss is resolved using Node.js module resolution algorithm starting from the root path. 
+
+This option allows explicit specification of the tailwindcss package location for scenarios where automatic resolution fails or the resolved path is not correct, such as in monorepo.
+
+- Type: `string | undefined`
+- Default: `undefined`
+
+```js
+// rsbuild.config.ts
+import { pluginTailwindCSS } from 'rsbuild-plugin-tailwindcss'
+
+export default {
+  plugins: [
+    pluginTailwindCSS({
+      tailwindcssPath: require.resolve('tailwindcss'),
+    }),
+  ],
+};
+```
+
 ## Debugging
 
 Use `DEBUG='rsbuild'` to enable debugging mode for the plugin. When debugging is enabled, the plugin will:

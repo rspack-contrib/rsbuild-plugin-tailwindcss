@@ -149,7 +149,7 @@ interface TailwindRspackPluginOptions {
    * Specifies the absolute path to the tailwindcss package.
    *
    * By default, tailwindcss is resolved using Node.js module resolution algorithm
-   * starting from the project's root directory. This option allows explicit
+   * starting from the root path. This option allows explicit
    * specification of the tailwindcss location for scenarios where automatic
    * resolution fails or the resolved path is not correct, such as in monorepo.
    *
@@ -160,11 +160,7 @@ interface TailwindRspackPluginOptions {
    * export default {
    *   plugins: [
    *     new TailwindRspackPlugin({
-   *       postcssOptions: {
-   *         plugins: {
-   *           tailwindcssPath: require.resolve('tailwindcss'),
-   *         },
-   *       },
+   *       tailwindcssPath: require.resolve('tailwindcss'),
    *     }),
    *   ],
    * }
