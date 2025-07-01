@@ -28,7 +28,7 @@
     "pre-commit": "npm run lint:write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.0.6",
     "@playwright/test": "^1.53.2",
     "@rollup/pluginutils": "^5.2.0",
     "@rsbuild/core": "^1.4.2",
