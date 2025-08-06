@@ -16,18 +16,22 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: npm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install Pnpm
-        run: npm i -g corepack@latest --force && corepack enable
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "pnpm"
+
+      - name: Setup Package Managers
+        run: |
+          npm install -g npm@latest
+          npm --version
+          npm install -g corepack@latest --force
+          corepack enable
 
       - name: Install Dependencies
         run: pnpm install
@@ -35,9 +39,4 @@ jobs:
       - name: Publish
         uses: JS-DevTools/npm-publish@v3
         with:
-          token: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          generateReleaseNotes: "true"
+          token: empty
