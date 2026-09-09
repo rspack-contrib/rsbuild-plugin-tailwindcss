@@ -30,17 +30,17 @@
     "pre-commit": "pnpm run lint:write"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1",
-    "@rollup/pluginutils": "^5.3.0",
-    "@rsbuild/core": "2.0.3",
-    "@rslib/core": "^0.21.3",
-    "@rslint/core": "^0.5.1",
-    "@types/node": "^24.12.2",
-    "@types/semver": "^7.7.1",
+    "@playwright/test": "^1.63.0",
+    "@rollup/pluginutils": "^5.4.0",
+    "@rsbuild/core": "2.2.5",
+    "@rslib/core": "^0.23.2",
+    "@rslint/core": "^0.9.2",
+    "@types/node": "^24.13.4",
+    "@types/semver": "^7.8.0",
     "postcss": "^8.5.13",
-    "prettier": "^3.8.3",
-    "semver": "^7.7.4",
-    "simple-git-hooks": "^2.13.1",
+    "prettier": "^3.9.6",
+    "semver": "^7.8.5",
+    "simple-git-hooks": "^2.14.0",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3"
   },
@@ -53,7 +53,7 @@
       "optional": true
     }
   },
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@10.34.5",
   "publishConfig": {
     "access": "public",
     "provenance": true,
